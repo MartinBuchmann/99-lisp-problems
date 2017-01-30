@@ -1,0 +1,7 @@
+# ignore some editor temp files
+*~
+.#*
+# ignore OS X system files
+.DS_Store
+# ignore the old files
+_old/*
