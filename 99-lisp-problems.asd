@@ -1,5 +1,4 @@
 ;;;; 99-lisp-problems.asd
-
 (asdf:defsystem #:99-lisp-problems
   :description "My solution to 99 programming problems."
   :author "Martin Buchmann <Martin.Buchmann@gmail.com>"
@@ -26,5 +25,9 @@
 	       (:file "17")
 	       (:file "18")
 	       (:file "19")
-	       (:file "20")))
+	       (:file "20")
+               (:file "21")
+               (:file "22")
+	       (:file "23")
+	       (:file "24")))
 
