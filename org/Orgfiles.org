@@ -1,0 +1,7 @@
+# -*- ispell-local-dictionary: "en" -*-
+#+AUTHOR: Martin Buchmann
+#+TITEL: Additional Documenation for my solutions to 99 Lisp problems
+
+For some problems I started to document my solution in an additional org file.
+
+#  LocalWords:  en LocalWords

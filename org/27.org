@@ -1,0 +1,142 @@
+# -*- ispell-local-dictionary: "en" -*-
+#+AUTHOR: Martin Buchmann
+#+TITLE: Grouping elements in disjoint sets
+#+STARTUP: showall
+#+OPTIONS: toc:nil
+
+* The problem
+
+Group the elements of a set into disjoint subsets.
+
+** Task b.)
+In how many ways can a group of 9 people work in 3 disjoint subgroups
+of 2, 3 and 4 persons? Write a function that generates all the
+possibilities and returns them in a list.
+
+*** Example:
+#+BEGIN_SRC lisp
+  * (group3 '(aldo beat carla david evi flip gary hugo ida))
+  (((ALDO BEAT) (CARLA DAVID EVI) (FLIP GARY HUGO IDA) )
+  ... )
+#+END_SRC
+
+** Task b.) 
+ Generalize the above predicate in a way that we can specify a list of
+ group sizes and the predicate will return a list of groups.
+
+*** Example:
+#+BEGIN_SRC lisp
+ * (group '(aldo beat carla david evi flip gary hugo ida) '(2 2 5))
+ (((ALDO BEAT) (CARLA DAVID) (EVI FLIP GARY HUGO IDA) )
+   ... )
+#+END_SRC
+
+* Important notice
+
+Note that we do not want permutations of the group members;
+i.e. ((ALDO BEAT) ...) is the same solution as ((BEAT ALDO) ...).
+However, we make a difference between ((ALDO BEAT) (CARLA DAVID) ...)
+and ((CARLA DAVID) (ALDO BEAT) ...).
+
+* Implementation [2/3]
+
+- [X] Define a stub of the function
+
+We need a function given a set and a list of group sizes returns the disjoint subgroup:
+
+#+BEGIN_SRC lisp
+    (defun group (set sizes)
+      "Returns all disjoint subgroups of a given set according to the list
+    of subgroup sizes."
+      (cond ((endp sizes)
+             (error "Not enough subgroup sizes given."))
+            ((endp (rest sizes))
+             (if (= (first sizes) (length set))
+                 (list (list set))
+                 (error "Mismatch in set size ~D but required is ~D" (length set) (first sizes))))
+            (t 'returning-the-correct-result)))
+#+END_SRC
+
+Of course, this is a rather stupid stub but it will help us to solve
+the problem by refine the ~cond~ clause. 
+
+- [X] Filling the stub with the actual work.
+
+Defining some special variables for testing.
+
+#+BEGIN_SRC lisp
+  (defvar *set* '(a b c d e f g h i))
+  (defvar *first-sets* (combination 2 *set*))
+#+END_SRC
+
+Using the function ~combination~ from solution 26, we get all
+combinations for a given subgroup size:
+
+#+BEGIN_SRC lisp
+  ;; Using the package 99-lisp-problems
+  (in-package :99-lisp-problems)
+  (let ((sizes '(2 3 4)))
+    (combination (first sizes) '(a b c d e f g h i)))
+#+END_SRC 
+
+This means we can break down our problem into two pieces. 
+
+1. Get all combinations with the first set sizes from the original set.
+2. Remove the first subgroup from the original set, subsequently.
+#+BEGIN_SRC lisp
+  (mapcar #'(lambda (first-set) (set-difference *set* first-set)) *first-sets*)
+#+END_SRC
+3. Repeat recursively step 1. and 2. with the result of 2. and append
+   all subgroups. The third step is to return the last set as a list
+   of a list.  This needs both mapcan and mapcar and some time to see
+   that it is right.
+
+#+BEGIN_SRC emacs-lisp
+  ;; Does not compile due to missing complete definition of `group`.
+  (mapcan #'(lambda (subgroup)
+                (mapcar #'(lambda (first-group) (cons subgroup first-group))
+                        (group (set-differnce set subgroup) (rest sizes))))
+            (combination (first sizes) set))
+#+END_SRC
+
+Putting all together we get:
+#+BEGIN_SRC lisp
+  (defun group (set sizes)
+	"Returns all disjoint subgroups of a given set according to the list
+      of subgroup sizes."
+	(cond ((endp sizes)
+               (error "Not enough subgroup sizes given."))
+              ((endp (rest sizes))
+               (if (= (first sizes) (length set))
+                   (list (list set))
+		 (error "Mismatch between set size ~D and subgroup size ~D"
+			(length set) (first sizes))))
+              (t (mapcan #'(lambda (subgroup)
+                             (mapcar #'(lambda (first-group) (cons subgroup first-group))
+                                     (group (set-difference set subgroup) (rest sizes))))
+			 (combination (first sizes) set)))))
+#+End_SRC
+
+- [ ] Test the Implementation so far.
+
+#+BEGIN_SRC lisp
+  (define-test test-group
+    (assert-equal 1260 (group '(aldo beat carla david evi flip gary hugo ida) '(2 3 4)))
+    (assert-equal 756 (group '(aldo beat carla david evi flip gary hugo ida) '(2 2 5))))
+#+END_SRC
+I will only implement two simple tests here.
+
+* Additional information
+
+Here you find more information about /multinomial coefficients/:
+http://de.wikipedia.org/wiki/Multinomialkoeffizient
+
+E.g. one can calucated the number of possible sets easily using:
+
+\[
+\frac{!9}{!2 * !3 * !4} = 1260
+\]
+
+which I did for testing.
+
+#  LocalWords:  en
