@@ -7,14 +7,20 @@
 ;;; Example:
 ;;; * (encode '(a a a a b c c a a d e e e e))
 ;;; ((4 A) (1 B) (2 C) (2 A) (1 D) (4 E))
-(defun encode (original-list)
+(defun encode (original-list &key (reversed nil))
   "Run-length encoding of a list."
   (labels ((encode-elements (element count list)
              (cond
-               ((null list) (list (list count element)))
+               ((null list) (list (if reversed
+                                      (list element count)
+                                      (list count element))))
                ((eql element (first list))
 		(encode-elements element (1+ count) (rest list)))
-               (t (cons (list count element) (encode-elements (first list) 1 (rest list)))))))
+               (t (cons
+                   (if reversed ; Introducing the possibility to reverse the order element and count.
+                       (list element count)
+                       (list count element))
+                    (encode-elements (first list) 1 (rest list)))))))
     (unless (null original-list)
       (encode-elements (first original-list) 1 (rest original-list)))))
 
