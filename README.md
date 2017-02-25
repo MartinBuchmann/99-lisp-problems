@@ -1,4 +1,4 @@
-<!-- -*- Mode: markdown -*- -->
+<!-- -*- Mode: markdown; ispell-local-dictionary: "en" -*- -->
 
 # 99-lisp-problems
 ==========
@@ -17,7 +17,7 @@ to comment on my code directly.
 I created a package *99-lisp-problems* to wrap my functions in their own
 namespace and a asdf-system called *99-lisp-problems*.  Futhermore, I am using
 *lisp-unit* to provide some simple unit tests.  I will upload new solution as I
-find the time.
+find the time.  The numbering of the problems follows the Joao's convention.
 
 Simply type:
 
